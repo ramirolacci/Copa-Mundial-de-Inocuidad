@@ -26,6 +26,8 @@ export default function ResultsScreen() {
   const displayName = getNameWithGenderEmoji(state.playerName);
 
   useEffect(() => {
+    if (state.hasSavedScore) return;
+
     // Save to leaderboard
     save({
       name: state.playerName,
@@ -34,11 +36,13 @@ export default function ResultsScreen() {
       penaltyMs: state.penaltyMs,
       eliminated: state.isEliminated,
     });
-    if (isWinner) playVictory();
-  }, []); // eslint-disable-line
+    dispatch({ type: 'MARK_SCORE_SAVED' });
 
-  const handleRestart = () => dispatch({ type: 'RESTART' });
+    if (isWinner) playVictory();
+  }, [state.hasSavedScore, state.playerName, state.phase, state.totalElapsedMs, state.penaltyMs, state.isEliminated, isWinner, save, playVictory, dispatch]);
+
   const handleLeaderboard = () => dispatch({ type: 'GO_TO_SCREEN', payload: 'leaderboard' });
+  const handleRestart = () => dispatch({ type: 'RESTART' });
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden"

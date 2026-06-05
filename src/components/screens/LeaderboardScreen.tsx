@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Trash2, Trophy, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Trophy } from 'lucide-react';
 import { useGameStore } from '../../store/useGameStore';
 import { useLeaderboard } from '../../hooks/useLeaderboard';
 import { PHASE_INFO } from '../../types/game';
@@ -9,18 +8,10 @@ const MEDAL = ['🥇', '🥈', '🥉'];
 
 export default function LeaderboardScreen() {
   const { dispatch } = useGameStore();
-  const { getAll, clear, formatTime, getPhaseLabel } = useLeaderboard();
+  const { getAll, formatTime, getPhaseLabel } = useLeaderboard();
   const entries = getAll();
-  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleBack = () => dispatch({ type: 'GO_TO_SCREEN', payload: 'results' });
-  const handleClearClick = () => setShowConfirm(true);
-  const handleConfirmClear = () => {
-    clear();
-    setShowConfirm(false);
-    dispatch({ type: 'GO_TO_SCREEN', payload: 'results' });
-  };
-  const handleCancelClear = () => setShowConfirm(false);
 
   return (
     <div className="min-h-screen px-4 py-8"
@@ -43,11 +34,7 @@ export default function LeaderboardScreen() {
             <Trophy size={22} className="text-yellow-400" />
             Ranking Mundial
           </h1>
-          <button onClick={handleClearClick} aria-label="Limpiar ranking"
-            className="text-slate-600 hover:text-red-400 transition-colors cursor-pointer
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 rounded-lg p-1">
-            <Trash2 size={16} />
-          </button>
+          <div className="w-16" /> {/* Spacer to balance the layout */}
         </motion.div>
 
         {entries.length === 0 ? (
@@ -151,51 +138,6 @@ export default function LeaderboardScreen() {
           </motion.div>
         )}
 
-        {/* Custom Confirmation Modal */}
-        <AnimatePresence>
-          {showConfirm && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={handleCancelClear}
-                className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                className="relative w-full max-w-sm bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-2xl flex flex-col items-center text-center gap-4"
-              >
-                <div className="w-12 h-12 rounded-full bg-red-900/40 border border-red-500/40 flex items-center justify-center text-red-500">
-                  <AlertTriangle size={24} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-black text-white">¿Borrar todo el ranking?</h3>
-                  <p className="text-slate-400 text-sm mt-2 leading-relaxed">
-                    Esta acción no se puede deshacer y se perderán de manera permanente todos los records registrados.
-                  </p>
-                </div>
-                <div className="flex gap-3 w-full mt-2">
-                  <button
-                    onClick={handleCancelClear}
-                    className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-sm transition-colors cursor-pointer border border-slate-700"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleConfirmClear}
-                    className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-sm transition-colors cursor-pointer"
-                  >
-                    Confirmar
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );

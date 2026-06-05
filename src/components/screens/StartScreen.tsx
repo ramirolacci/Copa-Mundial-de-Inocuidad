@@ -35,15 +35,27 @@ export default function StartScreen() {
   const { dispatch } = useGameStore();
   const [name, setName] = useState('');
   const [isRulesOpen, setIsRulesOpen] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleStart = () => {
     if (!name.trim()) return;
     dispatch({ type: 'START_GAME', payload: { name, settings: DEFAULT_SETTINGS } });
-  };
+  }; 
+
+  const yShift = typeof window !== 'undefined' && window.innerHeight < 750 ? -120 : -80;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-8"
+    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden overflow-y-auto px-4 py-8"
       style={{ background: 'linear-gradient(160deg, #0f172a 0%, #1a2744 50%, #0f2016 100%)' }}>
+
+      {/* Brand Logo in top-right corner */}
+      <div className="absolute top-4 right-4 z-20 pointer-events-none">
+        <img
+          src="/Logo%20Mi%20Gusto%202025.png"
+          alt="Logo Mi Gusto"
+          className="h-8 sm:h-10 w-auto object-contain brightness-115 contrast-115 drop-shadow-[0_2px_10px_rgba(251,191,36,0.3)]"
+        />
+      </div>
 
       {/* Decorative pitch lines */}
       <div className="absolute inset-0 pointer-events-none opacity-5">
@@ -56,6 +68,10 @@ export default function StartScreen() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
+        style={{
+          transform: isFocused ? `translateY(${yShift}px)` : 'translateY(0px)',
+          transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}
         className="relative z-10 w-full max-w-lg flex flex-col items-center gap-6"
       >
         {/* Ball */}
@@ -118,6 +134,13 @@ export default function StartScreen() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleStart()}
+              onFocus={(e) => {
+                setIsFocused(true);
+                setTimeout(() => {
+                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+              }}
+              onBlur={() => setIsFocused(false)}
               placeholder="Ingresar nombre completo"
               maxLength={40}
               aria-label="Nombre completo del jugador"
@@ -145,9 +168,19 @@ export default function StartScreen() {
           </motion.button>
         </motion.div>
 
-        <motion.p variants={itemVariants} className="text-slate-500 text-xs text-center">
-          Día Mundial de la Inocuidad Alimentaria · 7 de Junio
-        </motion.p>
+        {/* World Food Safety Day Badge */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-slate-900/60 border border-slate-800 rounded-full px-4 py-2 text-center"
+        >
+          <span className="text-yellow-400 text-xs font-extrabold uppercase tracking-widest">
+            7 de Junio
+          </span>
+          <span className="text-slate-500 text-xs mx-2.5">•</span>
+          <span className="text-slate-300 text-xs font-bold tracking-wide">
+            Día Mundial de la Inocuidad Alimentaria
+          </span>
+        </motion.div>
       </motion.div>
 
       <AnimatePresence>

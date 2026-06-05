@@ -24,8 +24,34 @@ export default function PergaminoScreen() {
     }
   };
 
-  const handlePrint = () => window.print();
   const handleBack = () => dispatch({ type: 'GO_TO_SCREEN', payload: 'results' });
+
+  const handlePrint = () => {
+    if (!printRef.current) return;
+    const printContents = printRef.current.innerHTML;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Pergamino del Compromiso</title>
+          <style>
+            body { margin: 0; padding: 24px; background: #fdf4d0; color: #1c1917; font-family: Georgia, serif; }
+            .pergamino-print { max-width: 900px; margin: 0 auto; }
+            input { border: none; outline: none; background: transparent; font: inherit; text-align: center; width: 100%; }
+            .print-hidden { display: none !important; }
+          </style>
+        </head>
+        <body>
+          <div class="pergamino-print">${printContents}</div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
 
   return (
     <div className="min-h-screen px-4 py-8"

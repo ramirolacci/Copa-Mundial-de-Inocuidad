@@ -57,6 +57,8 @@ export interface GameState {
   totalElapsedMs: number;
   penaltyMs: number;
   settings: GameSettings;
+  shuffledQuestions?: Record<Phase, Question[]>;
+  hasSavedScore?: boolean;
 }
 
 // ── Action types ─────────────────────────────────────────────────────────────
@@ -72,7 +74,8 @@ export type GameAction =
   | { type: 'RESTART' }
   | { type: 'GO_TO_SCREEN'; payload: Screen }
   | { type: 'SET_OPEN_ANSWER'; payload: string }
-  | { type: 'SUBMIT_OPEN_ANSWER'; payload: { timeTakenMs: number } };
+  | { type: 'SUBMIT_OPEN_ANSWER'; payload: { timeTakenMs: number } }
+  | { type: 'MARK_SCORE_SAVED' };
 
 // ── Phase metadata ────────────────────────────────────────────────────────────
 
