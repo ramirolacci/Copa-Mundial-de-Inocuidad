@@ -12,8 +12,8 @@ import {
 const MAX_SIGNATURES = 24;
 
 export default function PergaminoScreen() {
-  const { dispatch } = useGameStore();
-  const [signatures, setSignatures] = useState<string[]>(['']);
+  const { state, dispatch } = useGameStore();
+  const [signatures, setSignatures] = useState<string[]>([state.playerName || '']);
   const printRef = useRef<HTMLDivElement>(null);
 
   const addSignature = () => {
@@ -40,20 +40,12 @@ export default function PergaminoScreen() {
       style={{ background: 'linear-gradient(160deg, #0f172a 0%, #1a2744 100%)' }}>
 
       {/* Top bar (hidden on print) */}
-      <div className="max-w-3xl mx-auto flex items-center justify-between mb-6 print:hidden">
+      <div className="max-w-3xl mx-auto flex items-center mb-6 print:hidden">
         <button onClick={handleBack} aria-label="Volver a resultados"
           className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors cursor-pointer
             focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 rounded-lg px-2 py-1">
           <ArrowLeft size={18} />
           <span className="text-sm font-medium">Volver</span>
-        </button>
-        <button onClick={handlePrint} aria-label="Imprimir Pergamino"
-          className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm cursor-pointer
-            bg-gradient-to-r from-amber-700 to-yellow-600 text-white
-            hover:from-amber-600 hover:to-yellow-500 transition-all
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400">
-          <Printer size={16} />
-          Imprimir Pergamino
         </button>
       </div>
 
@@ -61,9 +53,14 @@ export default function PergaminoScreen() {
       <motion.div
         ref={printRef}
         id="pergamino-content"
-        initial={{ opacity: 0, scaleY: 0.8 }}
-        animate={{ opacity: 1, scaleY: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+        initial={{ opacity: 0, scaleY: 0.7, originY: 0 }}
+        animate={{ opacity: 1, scaleY: 1, originY: 0 }}
+        transition={{
+          type: 'spring',
+          stiffness: 70,
+          damping: 15,
+          mass: 1.2
+        }}
         style={{
           background: 'linear-gradient(145deg, #fef3c7 0%, #fde68a 30%, #fef3c7 60%, #fde68a 100%)',
           color: '#1c1917',
@@ -176,19 +173,7 @@ export default function PergaminoScreen() {
               </div>
             ))}
 
-            {/* Add signature button */}
-            {signatures.length < MAX_SIGNATURES && (
-              <button
-                onClick={addSignature}
-                aria-label="Agregar firma"
-                className="print:hidden border-2 border-dashed border-amber-700/30 rounded-lg py-3 flex items-center
-                  justify-center gap-1 text-amber-700/60 hover:text-amber-700 hover:border-amber-700/50
-                  transition-colors cursor-pointer text-sm font-medium"
-              >
-                <Plus size={14} />
-                Agregar
-              </button>
-            )}
+
           </div>
         </div>
       </motion.div>

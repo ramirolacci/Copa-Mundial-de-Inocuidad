@@ -70,7 +70,18 @@ export default function FeedbackScreen() {
       className="min-h-screen flex items-center justify-center px-4 py-8"
       style={{ backgroundColor: bgColor }}
     >
-      <div ref={cardRef} className="w-full max-w-lg flex flex-col gap-4">
+      <motion.div
+        ref={cardRef}
+        initial={{ opacity: 0, scale: 0.9, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{
+          type: 'spring',
+          stiffness: 90,
+          damping: 14,
+          mass: 0.8
+        }}
+        className="w-full max-w-lg flex flex-col gap-4"
+      >
 
         {/* Header */}
         <div className={`rounded-2xl border-2 p-6 ${headerBg}`}>
@@ -90,22 +101,7 @@ export default function FeedbackScreen() {
           </div>
         </div>
 
-        {/* Wrong answer explanation */}
-        {!isCorrect && lastQuestion && (
-          <div className="bg-slate-800/80 border border-slate-600 rounded-xl p-5">
-            <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
-              Respuesta correcta
-            </p>
-            {lastQuestion.opciones && lastQuestion.correcta !== undefined && (
-              <p className="text-green-300 font-semibold text-base mb-2">
-                ✅ {lastQuestion.opciones[lastQuestion.correcta]}
-              </p>
-            )}
-            {lastQuestion.explicacion && (
-              <p className="text-slate-300 text-sm leading-relaxed">{lastQuestion.explicacion}</p>
-            )}
-          </div>
-        )}
+
 
         {/* Correct explanation */}
         {isCorrect && lastQuestion?.explicacion && (
@@ -146,7 +142,7 @@ export default function FeedbackScreen() {
             ⏱ +{state.settings.timePenaltySeconds}s añadidos al tiempo total
           </p>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

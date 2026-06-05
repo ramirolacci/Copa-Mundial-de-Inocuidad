@@ -39,13 +39,24 @@ export default function PhaseTransitionScreen() {
           style={{ background: 'radial-gradient(circle, #fbbf24 0%, transparent 70%)' }} />
       </div>
 
-      <div className="relative z-10 w-full max-w-md text-center flex flex-col items-center gap-6">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{
+          type: 'spring',
+          stiffness: 90,
+          damping: 14,
+          mass: 0.8
+        }}
+        className="relative z-10 w-full max-w-md text-center flex flex-col items-center gap-6"
+      >
         {/* Phase completed icon */}
         <motion.div
-          initial={{ scale: 0, rotate: -20 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.1 }}
-          className="text-8xl"
+          initial={{ scale: 0, rotate: -35 }}
+          animate={{ scale: 1.1, rotate: 5 }}
+          whileHover={{ scale: 1.25, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 180, damping: 10, delay: 0.1 }}
+          className="text-8xl cursor-default select-none"
         >
           {currentInfo.icon}
         </motion.div>
@@ -61,7 +72,17 @@ export default function PhaseTransitionScreen() {
 
         {/* Next phase card */}
         {nextInfo && (
-          <div className={`w-full rounded-2xl border-2 p-6 ${nextInfo.bgColor} ${nextInfo.borderColor}`}>
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              type: 'spring',
+              stiffness: 100,
+              damping: 15,
+              delay: 0.25
+            }}
+            className={`w-full rounded-2xl border-2 p-6 ${nextInfo.bgColor} ${nextInfo.borderColor}`}
+          >
             <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3">
               Siguiente fase
             </p>
@@ -74,7 +95,7 @@ export default function PhaseTransitionScreen() {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Continue button */}
@@ -89,7 +110,7 @@ export default function PhaseTransitionScreen() {
           Continuar al Siguiente Partido
           <ArrowRight size={20} />
         </button>
-      </div>
+      </motion.div>
     </div>
   );
 }

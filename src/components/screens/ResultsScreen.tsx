@@ -46,9 +46,14 @@ export default function ResultsScreen() {
       {isWinner && <ConfettiEffect count={100} />}
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, scale: 0.9, y: 40 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{
+          type: 'spring',
+          stiffness: 90,
+          damping: 14,
+          mass: 0.8
+        }}
         className="relative z-10 w-full max-w-lg"
       >
         {/* Header */}
@@ -76,9 +81,14 @@ export default function ResultsScreen() {
           {Array.from({ length: 5 }, (_, i) => (
             <motion.span
               key={i}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 + i * 0.1 }}
+              initial={{ opacity: 0, scale: 0, y: 10 }}
+              animate={{ opacity: 1, scale: [0, 1.3, 1], y: 0 }}
+              transition={{
+                type: 'spring',
+                stiffness: 120,
+                damping: 10,
+                delay: 0.35 + i * 0.08
+              }}
               className={`text-3xl ${i < stars ? 'text-yellow-400' : 'text-slate-700'}`}
             >
               ★
@@ -87,7 +97,12 @@ export default function ResultsScreen() {
         </div>
 
         {/* Stats card */}
-        <div className="bg-slate-800/70 border border-slate-700 rounded-2xl p-5 mb-4 grid grid-cols-2 gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          className="bg-slate-800/70 border border-slate-700 rounded-2xl p-5 mb-4 grid grid-cols-2 gap-4"
+        >
           <div className="bg-slate-900/60 rounded-xl p-4 text-center">
             <div className={`text-3xl mb-1 ${phaseInfo.color}`}>{phaseInfo.icon}</div>
             <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide">Fase alcanzada</p>
@@ -117,7 +132,7 @@ export default function ResultsScreen() {
               {state.answers.filter(a => !a.correct).length}
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Motivational message */}
         <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-xl px-4 py-3 mb-5 text-center">

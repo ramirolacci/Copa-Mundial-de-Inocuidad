@@ -6,7 +6,7 @@ import { QUESTIONS } from '../data/questions';
 // ── Initial state ─────────────────────────────────────────────────────────────
 
 export const DEFAULT_SETTINGS: GameSettings = {
-  secondChanceEnabled: true,
+  secondChanceEnabled: false,
   timePenaltySeconds: 30,
 };
 

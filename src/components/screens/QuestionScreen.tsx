@@ -70,10 +70,15 @@ export default function QuestionScreen() {
       <div className="flex-1 flex items-center justify-center">
         <motion.div
           key={`${state.phase}-${state.questionIndex}`}
-          initial={{ opacity: 0, x: 60 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -60 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -50, scale: 0.95 }}
+          transition={{
+            type: 'spring',
+            stiffness: 90,
+            damping: 14,
+            mass: 0.8
+          }}
           className="w-full max-w-2xl"
         >
           {/* Phase header */}
@@ -119,9 +124,14 @@ export default function QuestionScreen() {
                   {question.opciones?.map((opt, i) => (
                     <motion.div
                       key={i}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.08 }}
+                      initial={{ opacity: 0, y: 25, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 100,
+                        damping: 13,
+                        delay: i * 0.06
+                      }}
                     >
                       <OptionButton
                         text={opt}

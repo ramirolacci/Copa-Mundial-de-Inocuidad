@@ -7,13 +7,29 @@ import SoccerBall from '../ui/SoccerBall';
 import type { GameSettings } from '../../types/game';
 
 const containerVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12 } },
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.05
+    }
+  },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  hidden: { opacity: 0, y: 40, scale: 0.95 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 14,
+      mass: 0.8
+    }
+  },
 };
 
 export default function StartScreen() {
@@ -94,7 +110,7 @@ export default function StartScreen() {
           <div>
             <label htmlFor="player-name" className="block text-slate-300 text-sm font-semibold mb-2">
               <Users size={14} className="inline mr-1.5 text-yellow-400" />
-              Tu nombre (para el ranking)
+              Nombre completo
             </label>
             <input
               id="player-name"
@@ -102,34 +118,12 @@ export default function StartScreen() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-              placeholder="Ej: María González"
+              placeholder="Ingresar nombre completo"
               maxLength={40}
-              aria-label="Nombre del jugador"
+              aria-label="Nombre completo del jugador"
               className="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500
                 focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-base"
             />
-          </div>
-
-          {/* Second chance toggle */}
-          <div className="flex items-center justify-between bg-slate-900/60 rounded-xl px-4 py-3 border border-slate-700">
-            <div className="flex items-center gap-2">
-              <Shield size={16} className="text-yellow-400" />
-              <div>
-                <p className="text-white text-sm font-semibold">Segunda Oportunidad</p>
-                <p className="text-slate-400 text-xs">+30s penalización al tiempo</p>
-              </div>
-            </div>
-            <button
-              role="switch"
-              aria-checked={settings.secondChanceEnabled}
-              aria-label="Activar segunda oportunidad"
-              onClick={() => setSettings(s => ({ ...s, secondChanceEnabled: !s.secondChanceEnabled }))}
-              className={`relative w-12 h-6 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
-                ${settings.secondChanceEnabled ? 'bg-yellow-400' : 'bg-slate-600'}`}
-            >
-              <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300
-                ${settings.secondChanceEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
-            </button>
           </div>
 
           {/* Start button */}
