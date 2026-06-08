@@ -25,8 +25,6 @@ A continuación se colocan las imágenes principales que muestran la interfaz y 
 - ![Captura de pantalla de la interfaz de preguntas](./public/assets/screenshots/question-screen.png)
 - ![Captura de pantalla de resultados y clasificación](./public/assets/screenshots/results-screen.png)
 
-> Estas capturas de pantalla deben corresponder con las imágenes proporcionadas, especialmente con la vista móvil del inicio del juego donde se destaca el logo, el título del torneo y el formulario de nombre.
-
 ## Flujo de juego
 
 1. El usuario inicia en una pantalla con mensaje de bienvenida al torneo.
