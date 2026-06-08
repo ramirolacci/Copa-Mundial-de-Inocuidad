@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import { useGameStore, useCurrentQuestion } from '../../store/useGameStore';
@@ -20,67 +20,8 @@ export default function QuestionScreen() {
   const { formatted } = useTimer(state.globalStartTime, true);
   const { playCorrect, playWrong } = useSound();
 
-  const randomizedQuestion = useMemo(() => {
-    if (!question || question.tipo !== 'opciones' || !Array.isArray(question.opciones) || question.opciones.length === 0) {
-      return question;
-    }
-
-    const entries = question.opciones.reduce<{ text: string; originalIndex: number }[]>((acc, opt, index) => {
-      if (typeof opt !== 'string') {
-        return acc;
-      }
-
-      const text = opt.replace(/^[A-Z]\)\s*/, '').trim();
-      acc.push({ text, originalIndex: index });
-      return acc;
-    }, []);
-
-    if (entries.length !== question.opciones.length) {
-      return question;
-    }
-
-    let seed = state.globalStartTime || Date.now();
-    seed += state.questionIndex * 37;
-    let a = Math.floor(seed % 2147483647);
-    if (a <= 0) a += 2147483646;
-
-    const random = () => {
-      a = Math.imul(a, 16807) % 2147483647;
-      return (a - 1) / 2147483646;
-    };
-
-    const shuffled = [...entries];
-    for (let i = shuffled.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-
-    const validShuffled = shuffled.every(
-      (item): item is { text: string; originalIndex: number } => !!item && typeof item.text === 'string'
-    )
-      ? shuffled
-      : [];
-
-    if (validShuffled.length !== shuffled.length) {
-      return question;
-    }
-
-    const correctIndex = typeof question.correcta === 'number' ? question.correcta : 0;
-    const newCorrectIndex = validShuffled.findIndex((entry) => entry.originalIndex === correctIndex);
-
-    if (newCorrectIndex < 0) {
-      return question;
-    }
-
-    return {
-      ...question,
-      opciones: validShuffled.map((item, index) => `${String.fromCharCode(65 + index)}) ${item.text ?? ''}`),
-      correcta: newCorrectIndex,
-    };
-  }, [question, state.globalStartTime, state.questionIndex]);
-
   const phaseInfo = PHASE_INFO[state.phase];
-  const isOpenQuestion = randomizedQuestion?.tipo === 'abierta';
+  const isOpenQuestion = question?.tipo === 'abierta';
 
   // Reset selection on question change
   useEffect(() => {
@@ -104,7 +45,7 @@ export default function QuestionScreen() {
 
     if (selectedIndex === null) return;
 
-    if (selectedIndex === randomizedQuestion?.correcta) {
+    if (selectedIndex === question?.correcta) {
       playCorrect();
       dispatch({ type: 'ANSWER_CORRECT', payload: { timeTakenMs } });
     } else {
@@ -116,115 +57,121 @@ export default function QuestionScreen() {
   const canConfirm = isOpenQuestion ? openText.trim().length > 10 : selectedIndex !== null;
 
   return (
-    <div className="min-h-screen flex flex-col px-4 py-6"
+    <div className="min-h-screen flex flex-col px-4 py-6 justify-between"
       style={{ background: 'linear-gradient(160deg, #0f172a 0%, #1a2744 100%)' }}>
 
-      {/* Top bar */}
-      <div className="w-full max-w-2xl mx-auto flex items-center justify-between mb-2">
-        <span className="text-slate-200 text-base sm:text-base font-semibold">{getNameWithGenderEmoji(state.playerName)}</span>
-        <GlobalTimer formatted={formatted} hasBonus={state.penaltyMs > 0} />
-      </div>
+      <div className="flex-1 flex flex-col justify-center w-full">
+        {/* Top bar */}
+        <div className="w-full max-w-2xl mx-auto flex items-center justify-between mb-2">
+          <span className="text-slate-200 text-base sm:text-base font-semibold">{getNameWithGenderEmoji(state.playerName)}</span>
+          <GlobalTimer formatted={formatted} hasBonus={state.penaltyMs > 0} />
+        </div>
 
-      {/* Main card */}
-      <div className="flex-1 flex items-center justify-center">
-        <motion.div
-          key={`${state.phase}-${state.questionIndex}`}
-          initial={{ opacity: 0, y: 50, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -50, scale: 0.95 }}
-          transition={{
-            type: 'spring',
-            stiffness: 90,
-            damping: 14,
-            mass: 0.8
-          }}
-          className="w-full max-w-2xl"
-        >
-          {/* Phase header */}
-          <PhaseHeader
-            phase={state.phase}
-            questionIndex={state.questionIndex}
-            totalQuestions={phaseInfo.questionCount}
-          />
-
-          {/* Question card */}
-          <div className="bg-slate-800/70 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-4">
-            {state.hasUsedSecondChance && (
-              <div className="mb-4 flex items-center gap-2 bg-orange-900/40 border border-orange-500/40 rounded-lg px-3 py-2">
-                <span className="text-orange-400 text-sm font-semibold">⚠️ Segunda Oportunidad activa – ¡La última!</span>
-              </div>
-            )}
-
-            {isOpenQuestion && question.instruccion && (
-              <p className="text-yellow-400/80 text-sm italic mb-4 border-l-2 border-yellow-400/40 pl-3">
-                {question.instruccion}
-              </p>
-            )}
-
-            <p className="text-white text-base sm:text-lg font-bold leading-snug mb-5">
-              {question.pregunta}
-            </p>
-
-            {/* Options or Open answer */}
-            {isOpenQuestion ? (
-              <textarea
-                value={openText}
-                onChange={(e) => setOpenText(e.target.value)}
-                disabled={confirmed}
-                placeholder="Escribe tu argumento completo aquí..."
-                rows={5}
-                aria-label="Respuesta abierta"
-                className="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500
-                  focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-base resize-none"
-              />
-            ) : (
-              <div className="flex flex-col gap-3">
-                <AnimatePresence>
-                  {randomizedQuestion?.opciones?.map((opt, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 25, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 100,
-                        damping: 13,
-                        delay: i * 0.06
-                      }}
-                    >
-                      <OptionButton
-                        text={opt}
-                        index={i}
-                        selected={selectedIndex === i}
-                        disabled={confirmed}
-                        onSelect={setSelectedIndex}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
-          </div>
-
-          {/* Confirm button */}
-          <motion.button
-            onClick={handleConfirm}
-            disabled={!canConfirm || confirmed}
-            whileHover={canConfirm && !confirmed ? { scale: 1.02 } : {}}
-            whileTap={canConfirm && !confirmed ? { scale: 0.97 } : {}}
-            aria-label="Confirmar respuesta"
-            className={`w-auto min-w-[180px] mx-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm sm:text-base transition-all duration-300
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
-              ${canConfirm && !confirmed
-                ? 'bg-gradient-to-r from-yellow-500 to-yellow-400 text-slate-900 shadow-lg shadow-yellow-900/30 cursor-pointer'
-                : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-              }`}
+        {/* Main card */}
+        <div className="w-full max-w-2xl mx-auto">
+          <motion.div
+            key={`${state.phase}-${state.questionIndex}`}
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.95 }}
+            transition={{
+              type: 'spring',
+              stiffness: 90,
+              damping: 14,
+              mass: 0.8
+            }}
+            className="w-full"
           >
-            <CheckCircle size={20} />
-            {confirmed ? 'Confirmando...' : 'Confirmar Respuesta'}
-          </motion.button>
-        </motion.div>
+            {/* Phase header */}
+            <PhaseHeader
+              phase={state.phase}
+              questionIndex={state.questionIndex}
+              totalQuestions={phaseInfo.questionCount}
+            />
+
+            {/* Question card */}
+            <div className="bg-slate-800/70 backdrop-blur border border-slate-700 rounded-2xl p-6 mb-4">
+              {state.hasUsedSecondChance && (
+                <div className="mb-4 flex items-center gap-2 bg-orange-900/40 border border-orange-500/40 rounded-lg px-3 py-2">
+                  <span className="text-orange-400 text-sm font-semibold">⚠️ Segunda Oportunidad activa – ¡La última!</span>
+                </div>
+              )}
+
+              {isOpenQuestion && question.instruccion && (
+                <p className="text-yellow-400/80 text-sm italic mb-4 border-l-2 border-yellow-400/40 pl-3">
+                  {question.instruccion}
+                </p>
+              )}
+
+              <p className="text-white text-base sm:text-lg font-bold leading-snug mb-5">
+                {question.pregunta}
+              </p>
+
+              {/* Options or Open answer */}
+              {isOpenQuestion ? (
+                <textarea
+                  value={openText}
+                  onChange={(e) => setOpenText(e.target.value)}
+                  disabled={confirmed}
+                  placeholder="Escribe tu argumento completo aquí..."
+                  rows={5}
+                  aria-label="Respuesta abierta"
+                  className="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500
+                    focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition-all text-base resize-none"
+                />
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <AnimatePresence>
+                    {question?.opciones?.map((opt, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 25, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 100,
+                          damping: 13,
+                          delay: i * 0.06
+                        }}
+                      >
+                        <OptionButton
+                          text={opt}
+                          index={i}
+                          selected={selectedIndex === i}
+                          disabled={confirmed}
+                          onSelect={setSelectedIndex}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+            </div>
+
+            {/* Confirm button */}
+            <motion.button
+              onClick={handleConfirm}
+              disabled={!canConfirm || confirmed}
+              whileHover={canConfirm && !confirmed ? { scale: 1.02 } : {}}
+              whileTap={canConfirm && !confirmed ? { scale: 0.97 } : {}}
+              aria-label="Confirmar respuesta"
+              className={`w-auto min-w-[180px] mx-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm sm:text-base transition-all duration-300
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
+                ${canConfirm && !confirmed
+                  ? 'bg-gradient-to-r from-yellow-500 to-yellow-400 text-slate-900 shadow-lg shadow-yellow-900/30 cursor-pointer'
+                  : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                }`}
+            >
+              <CheckCircle size={20} />
+              {confirmed ? 'Confirmando...' : 'Confirmar Respuesta'}
+            </motion.button>
+          </motion.div>
+        </div>
       </div>
+
+      <footer className="mt-8 text-center text-xs sm:text-sm text-slate-400 font-medium tracking-wide z-10">
+        © Desarrollado por el <strong className="font-bold text-slate-200">Departamento de Sistemas</strong> de <strong className="font-bold text-slate-200">Mi Gusto</strong> | Todos los derechos reservados.
+      </footer>
     </div>
   );
 }

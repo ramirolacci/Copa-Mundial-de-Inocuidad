@@ -8,16 +8,15 @@ const MEDAL = ['🥇', '🥈', '🥉'];
 
 export default function LeaderboardScreen() {
   const { dispatch } = useGameStore();
-  const { getAll, formatTime, getPhaseLabel } = useLeaderboard();
-  const entries = getAll();
+  const { entries, loading, formatTime, getPhaseLabel } = useLeaderboard();
 
   const handleBack = () => dispatch({ type: 'GO_TO_SCREEN', payload: 'results' });
 
   return (
-    <div className="min-h-screen px-4 py-8"
+    <div className="min-h-screen px-4 py-8 flex flex-col justify-between"
       style={{ background: 'linear-gradient(160deg, #0f172a 0%, #1a2744 100%)' }}>
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto w-full flex-grow">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -37,7 +36,12 @@ export default function LeaderboardScreen() {
           <div className="w-16" /> {/* Spacer to balance the layout */}
         </motion.div>
 
-        {entries.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-16">
+            <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-slate-400 text-sm">Cargando ranking mundial...</p>
+          </div>
+        ) : entries.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -137,8 +141,11 @@ export default function LeaderboardScreen() {
             <p className="text-slate-500 text-xs mt-0.5">Sin eliminaciones durante el torneo</p>
           </motion.div>
         )}
-
       </div>
+
+      <footer className="mt-8 text-center text-xs sm:text-sm text-slate-400 font-medium tracking-wide z-10">
+        © Desarrollado por el <strong className="font-bold text-slate-200">Departamento de Sistemas</strong> de <strong className="font-bold text-slate-200">Mi Gusto</strong> | Todos los derechos reservados.
+      </footer>
     </div>
   );
 }

@@ -67,82 +67,88 @@ export default function FeedbackScreen() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-8"
+      className="min-h-screen flex flex-col justify-between px-4 pt-8 pb-4"
       style={{ backgroundColor: bgColor }}
     >
-      <motion.div
-        ref={cardRef}
-        initial={{ opacity: 0, scale: 0.9, y: 40 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{
-          type: 'spring',
-          stiffness: 90,
-          damping: 14,
-          mass: 0.8
-        }}
-        className="w-full max-w-lg flex flex-col gap-4"
-      >
+      <div className="flex-grow flex items-center justify-center w-full">
+        <motion.div
+          ref={cardRef}
+          initial={{ opacity: 0, scale: 0.9, y: 40 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{
+            type: 'spring',
+            stiffness: 90,
+            damping: 14,
+            mass: 0.8
+          }}
+          className="w-full max-w-lg flex flex-col gap-4"
+        >
 
-        {/* Header */}
-        <div className={`rounded-2xl border-2 p-6 ${headerBg}`}>
-          <div className="flex items-center gap-3 mb-4">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 15 }}>
-              <Icon size={48} className={iconColor} />
-            </motion.div>
-            <div>
-              <h2 className={`text-2xl font-black ${titleColor}`}>{titleText}</h2>
-              <p className="text-slate-300 text-sm">{subText}</p>
+          {/* Header */}
+          <div className={`rounded-2xl border-2 p-6 ${headerBg}`}>
+            <div className="flex items-center gap-3 mb-4">
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 15 }}>
+                <Icon size={48} className={iconColor} />
+              </motion.div>
+              <div>
+                <h2 className={`text-2xl font-black ${titleColor}`}>{titleText}</h2>
+                <p className="text-slate-300 text-sm">{subText}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 bg-slate-800/60 rounded-lg px-3 py-1.5 w-fit">
+              <span className="text-slate-400 text-xs">⏱ Tiempo:</span>
+              <span className="font-mono font-bold text-white text-sm">{timeFormatted}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-slate-800/60 rounded-lg px-3 py-1.5 w-fit">
-            <span className="text-slate-400 text-xs">⏱ Tiempo:</span>
-            <span className="font-mono font-bold text-white text-sm">{timeFormatted}</span>
-          </div>
-        </div>
 
 
 
-        {/* Correct explanation */}
-        {isCorrect && lastQuestion?.explicacion && (
-          <div className="bg-green-900/20 border border-green-700/40 rounded-xl p-4">
-            <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">¿Por qué?</p>
-            <p className="text-green-200 text-sm leading-relaxed">{lastQuestion.explicacion}</p>
-          </div>
-        )}
+          {/* Correct explanation */}
+          {isCorrect && lastQuestion?.explicacion && (
+            <div className="bg-green-900/20 border border-green-700/40 rounded-xl p-4">
+              <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">¿Por qué?</p>
+              <p className="text-green-200 text-sm leading-relaxed">{lastQuestion.explicacion}</p>
+            </div>
+          )}
 
-        {/* Second chance */}
-        {canSecondChance && (
+          {/* Second chance */}
+          {canSecondChance && (
+            <button
+              onClick={handleSecondChance}
+              aria-label="Usar segunda oportunidad"
+              className="w-auto min-w-[180px] mx-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm sm:text-base cursor-pointer
+                bg-orange-600 hover:bg-orange-500 text-white transition-colors
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+            >
+              <RefreshCw size={18} />
+              Segunda Oportunidad (+{state.settings.timePenaltySeconds}s penalización)
+            </button>
+          )}
+
+          {/* Continue */}
           <button
-            onClick={handleSecondChance}
-            aria-label="Usar segunda oportunidad"
-            className="w-auto min-w-[180px] mx-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm sm:text-base cursor-pointer
-              bg-orange-600 hover:bg-orange-500 text-white transition-colors
-              focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+            onClick={handleContinue}
+            aria-label={continueLabel}
+            className={`w-auto min-w-[180px] mx-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm sm:text-base cursor-pointer
+              ${continueClass} text-white transition-colors
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400`}
           >
-            <RefreshCw size={18} />
-            Segunda Oportunidad (+{state.settings.timePenaltySeconds}s penalización)
+            {continueLabel}
+            <ArrowRight size={18} />
           </button>
-        )}
 
-        {/* Continue */}
-        <button
-          onClick={handleContinue}
-          aria-label={continueLabel}
-          className={`w-auto min-w-[180px] mx-auto flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-sm sm:text-base cursor-pointer
-            ${continueClass} text-white transition-colors
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400`}
-        >
-          {continueLabel}
-          <ArrowRight size={18} />
-        </button>
+          {state.hasUsedSecondChance && (
+            <p className="text-center text-orange-400/70 text-xs">
+              ⏱ +{state.settings.timePenaltySeconds}s añadidos al tiempo total
+            </p>
+          )}
+        </motion.div>
+      </div>
 
-        {state.hasUsedSecondChance && (
-          <p className="text-center text-orange-400/70 text-xs">
-            ⏱ +{state.settings.timePenaltySeconds}s añadidos al tiempo total
-          </p>
-        )}
-      </motion.div>
+      <footer className="mt-8 text-center text-xs sm:text-sm text-slate-400 font-medium tracking-wide z-10">
+        © Desarrollado por el <strong className="font-bold text-slate-200">Departamento de Sistemas</strong> de <strong className="font-bold text-slate-200">Mi Gusto</strong> | Todos los derechos reservados.
+      </footer>
     </div>
   );
 }

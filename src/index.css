@@ -95,13 +95,54 @@
 ::-webkit-scrollbar-track { background: #0f172a; }
 ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
+.signature-space {
+  height: 480px;
+}
+
+@media (max-width: 640px) {
+  .signature-space {
+    height: 320px;
+  }
+}
+
 /* Print styles for Pergamino */
 @media print {
-  body { background: #fef3c7 !important; color: #1c1917 !important; }
-  #root > * { display: none !important; }
-  .pergamino-print { display: block !important; }
+  body {
+    background: #ffffff !important;
+    color: #1c1917 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .min-h-screen {
+    background: none !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  #root > * {
+    background: transparent !important;
+  }
+
+  #pergamino-content {
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    padding: 30px !important;
+    max-width: 100% !important;
+    background: #fde68a !important;
+    height: 268mm !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+  }
+
+  .signature-space {
+    flex-grow: 1 !important;
+    height: auto !important;
+  }
+
   @page {
-    size: A2 portrait;
-    margin: 20mm;
+    size: A4 portrait;
+    margin: 10mm;
   }
 }
