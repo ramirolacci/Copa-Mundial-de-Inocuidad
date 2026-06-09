@@ -51,7 +51,7 @@ export default function StartScreen() {
       {/* Brand Logo in top-right corner */}
       <div className="absolute top-4 right-4 z-20 pointer-events-none">
         <img
-          src="/Logo%20Mi%20Gusto%202025.png"
+          src={`${(import.meta as any).env.BASE_URL}Logo%20Mi%20Gusto%202025.png`}
           alt="Logo Mi Gusto"
           className="h-8 sm:h-10 w-auto object-contain brightness-115 contrast-115 drop-shadow-[0_2px_10px_rgba(251,191,36,0.3)]"
         />
