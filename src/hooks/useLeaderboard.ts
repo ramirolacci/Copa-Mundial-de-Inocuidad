@@ -4,7 +4,6 @@ import type { LeaderboardEntry, Phase } from '../types/game';
 import { phaseRank } from '../types/game';
 
 const LOCAL_STORAGE_KEY = 'copa_mundial_leaderboard';
-const MAX_ENTRIES = 10;
 
 export function useLeaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -33,8 +32,7 @@ export function useLeaderboard() {
         const timeA = a.totalTimeMs + a.penaltyMs;
         const timeB = b.totalTimeMs + b.penaltyMs;
         return timeA - timeB;
-      })
-      .slice(0, MAX_ENTRIES);
+      });
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
     return newEntry;
   }, [getLocalEntries]);
@@ -67,10 +65,9 @@ export function useLeaderboard() {
           return timeA - timeB;
         });
 
-        const sliced = sorted.slice(0, MAX_ENTRIES);
-        setEntries(sliced);
+        setEntries(sorted);
         // Sync with local storage as secondary backup
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(sliced));
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(sorted));
       }
     } catch (err) {
       console.warn('Supabase fetch failed, falling back to localStorage:', err);
