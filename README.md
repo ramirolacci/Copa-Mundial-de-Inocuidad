@@ -100,6 +100,85 @@ Los participantes avanzan a través de distintas fases clasificatorias demostran
 
 ---
 
+## 🚀 Instalación y Puesta en Marcha
+
+Sigue estos pasos para clonar y ejecutar el proyecto en tu entorno local:
+
+### 1. Requisitos Previos
+
+Asegúrate de tener instalados:
+* [Node.js](https://nodejs.org/) (versión 18 o superior recomendada)
+* Un gestor de paquetes como [npm](https://www.npmjs.com/) o [pnpm](https://pnpm.io/)
+* [Git](https://git-scm.com/)
+
+---
+
+### 2. Clonar el Repositorio
+
+```bash
+git clone https://github.com/tu-usuario/Copa-Mundial-de-Inocuidad.git
+cd Copa-Mundial-de-Inocuidad
+```
+
+---
+
+### 3. Instalar Dependencias
+
+Instala los paquetes necesarios utilizando tu gestor de preferencia:
+
+```bash
+# Con npm
+npm install
+
+# O con pnpm
+pnpm install
+```
+
+---
+
+### 4. Configurar Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto basándote en [.env.example](file:///C:/Code/Copa-Mundial-de-Inocuidad/.env.example):
+
+```bash
+cp .env.example .env
+```
+
+Configura tus credenciales de Supabase en el archivo `.env`:
+
+```env
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=tu_clave_publica_o_anon_key
+```
+
+---
+
+### 5. Iniciar el Servidor de Desarrollo
+
+Ejecuta el servidor local de Vite:
+
+```bash
+# Con npm
+npm run dev
+
+# O con pnpm
+pnpm dev
+```
+
+La aplicación estará disponible en `http://localhost:5173` (o el puerto que asigne Vite).
+
+---
+
+### 📦 Scripts Disponibles
+
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Inicia el entorno de desarrollo local con Hot Module Replacement (HMR). |
+| `npm run build` | Compila TypeScript y genera los archivos optimizados de producción en `/dist`. |
+| `npm run preview` | Previsualiza localmente la compilación de producción generada. |
+
+---
+
 <div align="center">
 
   <sub>Desarrollado con pasión por el <b>Departamento de Sistemas</b> de <b>Mi Gusto</b></sub>  
